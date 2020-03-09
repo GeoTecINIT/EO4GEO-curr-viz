@@ -1,71 +1,6 @@
 var d3 = require("d3");
 
-var treeData = {
-  "longName": "Family",
-  "type": "studyProgram",
-  "name": "id0",
-  "parent": "null",
-  "path": 0,
-  "ects": 2,
-  "nsemesters": 1,
-  "proportions": [],
-  "concepts": ["treeConcept.drag-drop-list-learn-obj.DM3-5b http:/…#DM3-5b_Resolution_and_georeferencing_system_rev3", "treeConcept.drag-drop-list-learn-obj.GD3-1 http://…tos/gin2k#GD3-1_Geographic_coordinate_system_rev1", "treeConcept.drag-drop-list-description.CV6-5b http…k#CV6-5b_Map_ethics_Legal_and_privacy_issues_rev5", "treeConcept.drag-drop-list-prereq.OI6-1 http://www…and_international_organizations_and_programs_rev1"],
-  "r": 10,
-  "level": "",
-  "children": [{
-      "name": "Maths",
-      "longName": "Family",
-      "proportions": [],
-      "concepts": ["treeConcept.drag-drop-list-name.DM1-8 http://www.b…ledge.net/ontos/gin2k#DM1-8_XML_introduction_rev4", "treeConcept.drag-drop-list-learn-obj.GD3-1 http://…tos/gin2k#GD3-1_Geographic_coordinate_system_rev1", "treeConcept.drag-drop-list-description.CV6-5b http…k#CV6-5b_Map_ethics_Legal_and_privacy_issues_rev5", "treeConcept.drag-drop-list-prereq.OI6-1 http://www…and_international_organizations_and_programs_rev1"],
-      "ects": 4,
-      "r": 10,
-      "children": [{
-          "name": "Grandson",
-          "proportions": [],
-          "concepts": ["treeConcept.drag-drop-list-name.DM1-8 http://www.b…ledge.net/ontos/gin2k#DM1-8_XML_introduction_rev4", "treeConcept.drag-drop-list-learn-obj.DM3-5b http:/…#DM3-5b_Resolution_and_georeferencing_system_rev3", "treeConcept.drag-drop-list-learn-obj.GD3-1 http://…tos/gin2k#GD3-1_Geographic_coordinate_system_rev1", "treeConcept.drag-drop-list-description.CV6-5b http…k#CV6-5b_Map_ethics_Legal_and_privacy_issues_rev5", "treeConcept.drag-drop-list-prereq.OI6-1 http://www…and_international_organizations_and_programs_rev1"],
-          "longName": "Family",
-          "ects": 4,
-          "r": 10,
-        },
-        {
-          "name": "Granddaughter",
-          "proportions": [],
-          "concepts": ["treeConcept.drag-drop-list-name.DM1-8 http://www.b…ledge.net/ontos/gin2k#DM1-8_XML_introduction_rev4", "treeConcept.drag-drop-list-prereq.OI6-1 http://www…and_international_organizations_and_programs_rev1"],
-          "longName": "Family",
-          "ects": 3,
-          "r": 10,
-        }
-      ]
-    },
-    {
-      "name": "GIS",
-      "longName": "Family",
-      "proportions": [],
-      "concepts": ["treeConcept.drag-drop-list-name.DM1-8 http://www.b…ledge.net/ontos/gin2k#DM1-8_XML_introduction_rev4", "treeConcept.drag-drop-list-learn-obj.GD3-1 http://…tos/gin2k#GD3-1_Geographic_coordinate_system_rev1", "treeConcept.drag-drop-list-description.CV6-5b http…k#CV6-5b_Map_ethics_Legal_and_privacy_issues_rev5", "treeConcept.drag-drop-list-prereq.OI6-1 http://www…and_international_organizations_and_programs_rev1"],
-      "ects": 4,
-      "r": 10,
-      "children": [{
-          "name": "Grandson2",
-          "proportions": [],
-          "concepts": ["treeConcept.drag-drop-list-name.DM1-8 http://www.b…ledge.net/ontos/gin2k#DM1-8_XML_introduction_rev4", "treeConcept.drag-drop-list-learn-obj.DM3-5b http:/…#DM3-5b_Resolution_and_georeferencing_system_rev3", "treeConcept.drag-drop-list-learn-obj.GD3-1 http://…tos/gin2k#GD3-1_Geographic_coordinate_system_rev1", "treeConcept.drag-drop-list-description.CV6-5b http…k#CV6-5b_Map_ethics_Legal_and_privacy_issues_rev5", "treeConcept.drag-drop-list-prereq.OI6-1 http://www…and_international_organizations_and_programs_rev1"],
-          "longName": "Family",
-          "ects": 4,
-          "r": 10,
-        },
-        {
-          "name": "Granddaughter2",
-          "proportions": [],
-          "concepts": ["treeConcept.drag-drop-list-name.DM1-8 http://www.b…ledge.net/ontos/gin2k#DM1-8_XML_introduction_rev4", "treeConcept.drag-drop-list-prereq.OI6-1 http://www…and_international_organizations_and_programs_rev1"],
-          "longName": "Family",
-          "ects": 3,
-          "r": 10,
-        }
-      ]
-    }
-  ]
-};
-
-var currentSelectedD;
+var currentSelectedD = null;
 
 var i = 0,
   duration = 750,
@@ -73,56 +8,76 @@ var i = 0,
   treemap,
   svg,
   arc,
-  pie;
+  pie,
+  width,
+  height;
 
 var outerRadius = 10;
 var innerRadius = 0;
 
 var proportionsCode = {
-  AM: 0,
+  GI: 0,
+  AM: 1,
   CF: 2,
   CV: 3,
-  DA: 5,
-  DM: 8,
-  DN: 10,
-  GC: 9,
-  GD: 1,
-  GI: 11,
-  GS: 6,
-  OI: 4,
-  WB: 7,
-  SD: 13,
-  SH: 14,
-  SV: 15,
-  Sa: 16,
-  MD: 17,
-  no: 12
+  DA: 4,
+  DM: 5,
+  DN: 6,
+  GC: 7,
+  GD: 8, 
+  GS: 9,
+  MD: 10,
+  OI: 11,
+  SD: 12,
+  SH: 13,
+  WB: 14,
+  PP: 15,
+  PS: 16,
+  no: 17,
+  IP: 18,
+  TA: 19
 }
+
+var codeColors = [
+  "#ff7f0e",
+  "#9467bd",
+  "#8c564b",
+  "#17becf",
+  "#1f77b4",
+  "#7f7f7f",
+  "#17becf",
+  "#d62728",
+  "#e377c2",
+  "#2ca02c",
+  "#d62728",
+  "#bcbd22",
+  "#8c564b",
+  "#e377c2",
+  "#2ca02c",
+  "#2ca02c",
+  "#1f77b4",
+  "#1f77b4",
+  "#ff7f0e",
+  "#d62728"
+]
 
 var colorForNode = "#75DCCD";
 var colorForSelectedNode = "#096B5D";
 
 //displays tree graph
 exports.displayCurricula = function (tag = 'tree', treeData = treeData, initialWidth = 500, initialHeight = 650) {
+    currentSelectedD = null;
     // Set the dimensions and margins of the diagram
     var margin = {
-        top: 50,
-        right: 15,
-        bottom: 30,
-        left: 5
-      },
-      width = initialWidth - margin.left - margin.right,
-      // width = d3.select("#" + tag).node().clientWidth - margin.left - margin.right,
+      top: 50,
+      right: 15,
+      bottom: 30,
+      left: 5
+    };
+    width = initialWidth - margin.left - margin.right,
       height = initialHeight - margin.top - margin.bottom;
-    // height = d3.select("#" + tag).node().clientWidth - margin.top - margin.bottom;
 
-    console.log('display curricula Width: ' + width);
-
-    /*  var margin = 5,
-     diameter = svg.node().getAttribute('viewBox').split(" ")[2],
-     g = svg.append("g").attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")"); */
-
-     d3.select("#" + tag).select("svg").remove();
+    d3.select("#" + tag).select("svg").remove();
     // append the svg object to the body of the page
     // appends a 'group' element to 'svg'
     // moves the 'group' element to the top left margin
@@ -136,34 +91,51 @@ exports.displayCurricula = function (tag = 'tree', treeData = treeData, initialW
     // declares a tree layout and assigns the size
     treemap = d3.tree().size([width, height]);
 
-    // Assigns parent, children, height, depth
-    root = d3.hierarchy(treeData, function (d) {
-      return d.children;
-    });
-    root.x0 = width / 2;
-    root.y0 = 0;
-
-    currentSelectedD = root;
-
     arc = d3.arc()
       .innerRadius(innerRadius)
       .outerRadius(outerRadius);
 
     pie = d3.pie();
 
-    exports.update(root);
+    if (treeData != null) {
+
+      if (treeData.children.length != 0) {
+        // tree is not already created
+        if (!treeData.children[0].data) {
+          // Assigns parent, children, height, depth
+          root = d3.hierarchy(treeData, function (d) {
+            return d.children;
+          });
+          root.x0 = width / 2;
+          root.y0 = 0;
+        }
+      } else { // new SP
+        // Assigns parent, children, height, depth
+        root = d3.hierarchy(treeData, function (d) {
+          return d.children;
+        });
+        root.x0 = width / 2;
+        root.y0 = 0;
+      }
+      currentSelectedD = root;
+
+      calculateNumChild(root.children);
+      exports.update(root);
+    }
+
+    function calculateNumChild(children) {
+      // recursively calculate proportions for child nodes
+      // console.log("calculateNumChild");
+      if (children && children.length > 0) {
+        for (var j = 0; j < children.length; j++) {
+          children[j].numNode = j;
+          calculateNumChild(children[j].children);
+        }
+      }
+    }
   },
 
   exports.update = function (source) {
-
-    /*var width = d3.select("#" + tag).node().clientWidth - margin.left - margin.right,
-     height = d3.select("#" + tag).node().clientWidth - margin.top - margin.bottom;
-     svg.attr("width", width + margin.right + margin.left)
-       .attr("height", height + margin.top + margin.bottom);
-
-       */
-    // console.log("update width: " +  document.getElementById("svgGraphTree").width)
-    //  document.getElementById("svgGraphTree").width = 900;
 
     // Assigns the x and y position for the nodes
     var treeData = treemap(root);
@@ -177,7 +149,7 @@ exports.displayCurricula = function (tag = 'tree', treeData = treeData, initialW
       d.y = d.depth * 180
     });
 
-    // ****************** Nodes section ***************************
+    // ****************** Nodes section ***************************     
 
     // Update the nodes...
     var node = svg.selectAll('g.node')
@@ -195,7 +167,13 @@ exports.displayCurricula = function (tag = 'tree', treeData = treeData, initialW
         return "node" + d.id;
       })
       .attr("transform", function (d) {
-        return "translate(" + source.x0 + "," + source.y0 + ")";
+        if (source && source.x0) {
+          //  console.log("translate(" + source.x0 + "," + source.y0 + ")");
+          return "translate(" + source.x0 + "," + source.y0 + ")";
+        } else {
+          //   console.log("translate(" + 200 + "," + 0 + ")");
+          return "translate(200,0)";
+        }
       })
       .on('click', clickNodeTree)
       .style("fill", function (d) {
@@ -224,11 +202,16 @@ exports.displayCurricula = function (tag = 'tree', treeData = treeData, initialW
     // Add labels for the nodes
     nodeEnter.append('text')
       .attr("y", function (d) {
-        return d.depth < 4 ? -18 : 18;
+        if (d.numNode % 2 != 0) {
+          // return d.depth < 4 ? -18 : 18;
+          return -18;
+        } else {
+          return 30;
+        }
       }) //if it's last level, text goes below node, else above node
       .attr("dy", -1)
       .attr("x", function (d) {
-        return d.children || d._children ? -13 : 13;
+        return 0; // return d.children || d._children ? -13 : 13;
       })
       .attr("text-anchor", "middle")
       .attr("fill", "black")
@@ -264,16 +247,11 @@ exports.displayCurricula = function (tag = 'tree', treeData = treeData, initialW
       .style("fill-opacity", 0.8)
       .attr('cursor', 'pointer');
 
+
     nodeUpdate.select("text")
       .text(function (d) {
-      // TODO: Abbreviations
-        //   var abbr = document.getElementById("activateAbbreviation").checked;
         var abbr = false;
-       /* if (d.parent && d.parent.children != null && d.data.name.length > 5 && abbr)
-          return d.data.name.substring(0, 5) + "...";
-        else
-        */
-       if (d.data && d.data.name && d.data.name.length > 30) {
+        if (d.data && d.data.name && d.data.name.length > 30) {
           return d.data.name.substring(0, 20) + "...";
         } else {
           return d.data.name;
@@ -303,6 +281,7 @@ exports.displayCurricula = function (tag = 'tree', treeData = treeData, initialW
     // On exit reduce the opacity of text labels
     nodeExit.select('text')
       .style('fill-opacity', 1e-6);
+
 
     // ****************** links section ***************************
 
@@ -408,6 +387,8 @@ exports.displayCurricula = function (tag = 'tree', treeData = treeData, initialW
     }
 
     function drawPie(pieNode) {
+      var colorPalette = d3.scaleOrdinal(d3.schemeCategory10);
+
       if (pieNode && pieNode.data.proportions && pieNode.data.proportions.length > 0) {
 
         //Pie chart
@@ -431,22 +412,18 @@ exports.displayCurricula = function (tag = 'tree', treeData = treeData, initialW
         arcs.append("path")
           .attr("class", "pie")
           .attr("fill", function (d, i) {
-            //  console.log(pieNode.data.proportions);
-            // console.log("color for " + i + " is " + d3.schemeCategory10[i % d3.schemeCategory10.length])
-            return d3.schemeCategory10[i % d3.schemeCategory10.length];
+            return codeColors[i];
           })
           .attr("d", arc);
       }
-
     }
 
     function calculateProportionsForPie(nodeDrawingPie) {
       //Pie chart
       d3.select("#node" + nodeDrawingPie.id).selectAll("g.arc").remove();
-
       var conceptId;
+      nodeDrawingPie.data.proportions = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
       if (nodeDrawingPie.data.concepts && nodeDrawingPie.data.concepts.length > 0) {
-        nodeDrawingPie.data.proportions = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         for (var i = 0; i < nodeDrawingPie.data.concepts.length; i++) {
           conceptId = nodeDrawingPie.data.concepts[i].substring(1, 3);
           nodeDrawingPie.data.proportions[proportionsCode[conceptId]]++;
@@ -455,12 +432,61 @@ exports.displayCurricula = function (tag = 'tree', treeData = treeData, initialW
       // recursively calculate proportions for child nodes
       if (nodeDrawingPie.children && nodeDrawingPie.children.length > 0) {
         for (var j = 0; j < nodeDrawingPie.children.length; j++) {
-          calculateProportionsForPie(nodeDrawingPie.children[j])
+          calculateProportionsForPie(nodeDrawingPie.children[j]);
         }
       }
       drawPie(nodeDrawingPie)
     }
   },
+
+  exports.addNewNodeWithDepth = function (nameNew, depth) {
+
+    // If node children are closed copy them to prevent losing children
+    if (currentSelectedD && currentSelectedD.children == null) {
+      currentSelectedD.children = currentSelectedD._children;
+    }
+
+    var newNode = {
+      name: nameNew,
+      longName: nameNew,
+      proportions: [],
+      depth: depth,
+      id: 0,
+    };
+    //Creates a Node from newNode object using d3.hierarchy(.)
+    var newNode = d3.hierarchy(newNode);
+
+    //later added some properties to Node like child,parent,depth
+    newNode.depth = depth;
+    newNode.height = 4 - depth;
+
+    if (currentSelectedD) {
+
+      newNode.parent = currentSelectedD;
+
+      //Selected is a node, to which we are adding the new node as a child
+      //If no child array, create an empty array
+      if (currentSelectedD && !currentSelectedD.children) {
+        currentSelectedD.children = [];
+      }
+
+      // newNode numNode to calculate text up or down
+      newNode.numNode = currentSelectedD.children ? currentSelectedD.children.length : 0;
+
+      //Push it to parent.children array  
+      currentSelectedD.children.push(newNode);
+
+      //Update tree
+      exports.update(currentSelectedD);
+    } else {
+      root = d3.hierarchy(newNode, function (d) {
+        return d.children;
+      });
+      currentSelectedD = root;
+      exports.update(root);
+    }
+  },
+
 
   exports.addNewNode = function (nameNew) {
 
@@ -487,12 +513,13 @@ exports.displayCurricula = function (tag = 'tree', treeData = treeData, initialW
     //If no child array, create an empty array
     if (!currentSelectedD.children) {
       currentSelectedD.children = [];
-      // -- currentSelectedD.data.children = [];
     }
+
+    // newNode numNode to calculate text up or down
+    newNode.numNode = currentSelectedD.children ? currentSelectedD.children.length : 0;
 
     //Push it to parent.children array  
     currentSelectedD.children.push(newNode);
-    // --  currentSelectedD.data.children.push(newNode.data);
 
     //Update tree
     exports.update(currentSelectedD);
@@ -506,13 +533,6 @@ exports.displayCurricula = function (tag = 'tree', treeData = treeData, initialW
       currentSelectedD.children = currentSelectedD._children;
     }
 
-    /* var newNode = {
-      name: node.name,
-      longName: node.name,
-      proportions: [],
-      children: node.children
-    }; */
-
     node.proportions = [];
     node.longName = node.name;
 
@@ -525,13 +545,16 @@ exports.displayCurricula = function (tag = 'tree', treeData = treeData, initialW
     newNode.parent = currentSelectedD;
     // newNode.id = Date.now();
 
+    // newNode numNode to calculate text up or down
+    newNode.numNode = currentSelectedD.children ? currentSelectedD.children.length : 0;
+
     //Selected is a node, to which we are adding the new node as a child
     //If no child array, create an empty array
     if (!currentSelectedD.children) {
       currentSelectedD.children = [];
-      // --    currentSelectedD.data.children = [];
     }
 
+    //add node children to this newNode
     if (newNode.children && newNode.children.length > 0) {
       newNode.children.forEach(c => {
         c.depth = currentSelectedD.depth + 2;
@@ -545,7 +568,17 @@ exports.displayCurricula = function (tag = 'tree', treeData = treeData, initialW
 
     //Push it to parent.children array  
     currentSelectedD.children.push(newNode);
-    // --  currentSelectedD.data.children.push(newNode.data);
+
+    calculateNumChild(currentSelectedD.children);
+
+    function calculateNumChild(children) {
+      if (children && children.length > 0) {
+        for (var j = 0; j < children.length; j++) {
+          children[j].numNode = j;
+          calculateNumChild(children[j].children);
+        }
+      }
+    }
 
     //Update tree
     exports.update(currentSelectedD);
@@ -555,21 +588,19 @@ exports.displayCurricula = function (tag = 'tree', treeData = treeData, initialW
   exports.removeSelectedNode = function () {
     var temp = currentSelectedD.parent;
 
-    for (var i = 0; i < temp.children.length; i++) {
-      if (temp.children[i] == currentSelectedD) {
-        temp.children.splice(i, 1);
-        // --    temp.data.children.splice(i, 1);
+    if (temp) {
+      for (var i = 0; i < temp.children.length; i++) {
+        if (temp.children[i] == currentSelectedD) {
+          temp.children.splice(i, 1);
+        }
       }
+      if (temp.children.length == 0) {
+        temp.children = null;
+      }
+      currentSelectedD = temp;
     }
-    /* for (var j = 0; j < temp.data.children.length; j++) {
-       if (temp.data.children[j] == currentSelectedD) {
-         temp.data.children.splice(j, 1);
-       }
-     }*/
-    currentSelectedD = temp;
     //Update tree
     exports.update(currentSelectedD);
-
   },
 
   exports.updateNode = function (node) {
