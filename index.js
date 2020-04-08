@@ -256,8 +256,23 @@ exports.displayCurricula = function (tag = 'tree', treeData = treeData, initialW
         } else {
           return d.data.name;
         }
-      })
-      .attr("dy", function (d) {
+      }).on("mouseover", function (d) {
+        d3.select(this)
+          .text(function (d) {
+            return d.data.name;
+          })
+          .style("fill-opacity", 1)
+      }).on("mouseout", function (d) {
+        d3.select(this)
+          .text(function (d) {
+            if (d.data && d.data.name && d.data.name.length > 25) {
+              return d.data.name.substring(0, 15) + "...";
+            } else {
+              return d.data.name;
+            }
+          })
+          .style("fill-opacity", 0.7)
+      }).attr("dy", function (d) {
         if (d.children) {
           return -1 - d.children.length * 1.5;
         } else {
