@@ -1,6 +1,6 @@
 {
   "name": "@eo4geo/curr-viz",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "EO4GEO-curr-viz is an script to visualize curricula in a tree layout",
   "main": "index.js",
   "dependencies": {
