@@ -17,48 +17,48 @@ var innerRadius = 0;
 
 var proportionsCode = {
   GI: 0,
-  AM: 1,
+  IP: 1,
   CF: 2,
   CV: 3,
   DA: 4,
   DM: 5,
   DN: 6,
-  GC: 7,
-  GD: 8, 
+  PS: 7,
+  GD: 8,
   GS: 9,
-  MD: 10,
-  OI: 11,
-  SD: 12,
-  SH: 13,
-  WB: 14,
-  PP: 15,
-  PS: 16,
-  no: 17,
-  IP: 18,
-  TA: 19
+  AM: 10,
+  MD: 11,
+  OI: 12,
+  GC: 13,
+  PP: 14,
+  SD: 15,
+  SH: 16,
+  TA: 17,
+  WB: 18,
+  no: 19
 }
 
 var codeColors = [
+  "#40e0d0",
+  "#1f77b4",
+  "#aec7e8",
   "#ff7f0e",
+  "#ffbb78",
+  "#2ca02c",
+  "#98df8a",
+  "#d62728",
+  "#cc5b59",
   "#9467bd",
   "#8c564b",
-  "#17becf",
-  "#1f77b4",
-  "#7f7f7f",
-  "#17becf",
-  "#d62728",
-  "#e377c2",
-  "#2ca02c",
-  "#d62728",
-  "#bcbd22",
   "#8c564b",
+  "#c49c94",
   "#e377c2",
-  "#2ca02c",
-  "#2ca02c",
-  "#1f77b4",
-  "#1f77b4",
-  "#ff7f0e",
-  "#d62728"
+  "#f7b6d2",
+  "#7f7f7f",
+  "#c7c7c7",
+  "#bcbd22",
+  "#07561e",
+  "#17becf"
 ]
 
 var colorForNode = "#75DCCD";
@@ -66,74 +66,63 @@ var colorForSelectedNode = "#096B5D";
 
 //displays tree graph
 exports.displayCurricula = function (tag = 'tree', treeData = treeData, initialWidth = 500, initialHeight = 650) {
-    currentSelectedD = null;
-    // Set the dimensions and margins of the diagram
-    var margin = {
-      top: 50,
-      right: 15,
-      bottom: 30,
-      left: 5
-    };
-    width = initialWidth - margin.left - margin.right,
-      height = initialHeight - margin.top - margin.bottom;
+  currentSelectedD = null;
+  // Set the dimensions and margins of the diagram
+  var margin = {
+    top: 50,
+    right: 15,
+    bottom: 30,
+    left: 5
+  };
+  width = initialWidth - margin.left - margin.right,
+    height = initialHeight - margin.top - margin.bottom;
 
-    d3.select("#" + tag).select("svg").remove();
-    // append the svg object to the body of the page
-    // appends a 'group' element to 'svg'
-    // moves the 'group' element to the top left margin
-    svg = d3.select("#" + tag).append("svg")
-      .attr("width", width + margin.right + margin.left)
-      .attr("height", height + margin.top + margin.bottom)
-      .attr("id", "svgGraphTree")
-      .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  d3.select("#" + tag).select("svg").remove();
+  // append the svg object to the body of the page
+  // appends a 'group' element to 'svg'
+  // moves the 'group' element to the top left margin
+  svg = d3.select("#" + tag).append("svg")
+    .attr("width", width + margin.right + margin.left)
+    .attr("height", height + margin.top + margin.bottom)
+    .attr("id", "svgGraphTree")
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    // declares a tree layout and assigns the size
-    treemap = d3.tree().size([width, height]);
+  // declares a tree layout and assigns the size
+  treemap = d3.tree().size([width, height]);
 
-    arc = d3.arc()
-      .innerRadius(innerRadius)
-      .outerRadius(outerRadius);
+  arc = d3.arc()
+    .innerRadius(innerRadius)
+    .outerRadius(outerRadius);
 
-    pie = d3.pie();
+  pie = d3.pie();
 
-    if (treeData != null) {
+  if (treeData != null) {
 
-      if (treeData.children.length != 0) {
-        // tree is not already created
-        if (!treeData.children[0].data) {
-          // Assigns parent, children, height, depth
-          root = d3.hierarchy(treeData, function (d) {
-            return d.children;
-          });
-          root.x0 = width / 2;
-          root.y0 = 0;
-        }
-      } else { // new SP
+    if (treeData.children && treeData.children.length != 0) {
+      // tree is not already created
+      if (!treeData.children[0].data) {
         // Assigns parent, children, height, depth
         root = d3.hierarchy(treeData, function (d) {
           return d.children;
         });
         root.x0 = width / 2;
-        root.y0 = 0;
+        root.y0 = 180 * root.data.depth;
+        // root.y0 = 0;
       }
-      currentSelectedD = root;
-
-      calculateNumChild(root.children);
-      exports.update(root);
+    } else { // new SP
+      // Assigns parent, children, height, depth
+      root = d3.hierarchy(treeData, function (d) {
+        return d.children;
+      });
+      root.x0 = width / 2;
+      root.y0 = 180 * root.data.depth;
+      // root.y0 = 0;
     }
-
-    function calculateNumChild(children) {
-      // recursively calculate proportions for child nodes
-      // console.log("calculateNumChild");
-      if (children && children.length > 0) {
-        for (var j = 0; j < children.length; j++) {
-          children[j].numNode = j;
-          calculateNumChild(children[j].children);
-        }
-      }
-    }
-  },
+    currentSelectedD = root;
+    exports.update(root);
+  }
+},
 
   exports.update = function (source) {
 
@@ -146,7 +135,7 @@ exports.displayCurricula = function (tag = 'tree', treeData = treeData, initialW
 
     // Normalize for fixed-depth.
     nodes.forEach(function (d) {
-      d.y = d.depth * 180
+      d.y = d.data.depth * 180
     });
 
     // ****************** Nodes section ***************************     
@@ -168,10 +157,10 @@ exports.displayCurricula = function (tag = 'tree', treeData = treeData, initialW
       })
       .attr("transform", function (d) {
         if (source && source.x0) {
-          //  console.log("translate(" + source.x0 + "," + source.y0 + ")");
+          console.log("translate(" + source.x0 + "," + source.y0 + ")");
           return "translate(" + source.x0 + "," + source.y0 + ")";
         } else {
-          //   console.log("translate(" + 200 + "," + 0 + ")");
+          console.log("translate(" + 200 + "," + 0 + ")");
           return "translate(200,0)";
         }
       })
@@ -182,7 +171,38 @@ exports.displayCurricula = function (tag = 'tree', treeData = treeData, initialW
         else
           return colorForNode;
       })
-      .style("fill-opacity", 0.8);
+      .style("fill-opacity", 0.8)
+      .on("mouseover", function (d) {
+        d3.select(this).select('text')
+          .text(function (d) {
+            return d.data.name;
+          })
+          .style("fill-opacity", 1)
+          .attr("y", function (d) {
+            if (d.id % 2 == 0) {
+              return 42;
+            } else {
+              return -30;
+            }
+          })
+      }).on("mouseout", function (d) {
+        d3.select(this).select('text')
+          .text(function (d) {
+            if (d.data && d.data.name && d.data.name.length > 25) {
+              return d.data.name.substring(0, 15) + "...";
+            } else {
+              return d.data.name;
+            }
+          })
+          .style("fill-opacity", 0.7)
+          .attr("y", function (d) {
+            if (d.id % 2 == 0) {
+              return 30;
+            } else {
+              return -18;
+            }
+          })
+      });
 
     // Add Circle for the nodes
     nodeEnter.append('circle')
@@ -202,11 +222,11 @@ exports.displayCurricula = function (tag = 'tree', treeData = treeData, initialW
     // Add labels for the nodes
     nodeEnter.append('text')
       .attr("y", function (d) {
-        if (d.numNode % 2 != 0) {
+        if (d.id % 2 == 0) {
           // return d.depth < 4 ? -18 : 18;
-          return -18;
-        } else {
           return 30;
+        } else {
+          return -18;
         }
       }) //if it's last level, text goes below node, else above node
       .attr("dy", -1)
@@ -256,22 +276,6 @@ exports.displayCurricula = function (tag = 'tree', treeData = treeData, initialW
         } else {
           return d.data.name;
         }
-      }).on("mouseover", function (d) {
-        d3.select(this)
-          .text(function (d) {
-            return d.data.name;
-          })
-          .style("fill-opacity", 1)
-      }).on("mouseout", function (d) {
-        d3.select(this)
-          .text(function (d) {
-            if (d.data && d.data.name && d.data.name.length > 25) {
-              return d.data.name.substring(0, 15) + "...";
-            } else {
-              return d.data.name;
-            }
-          })
-          .style("fill-opacity", 0.7)
       }).attr("dy", function (d) {
         if (d.children) {
           return -1 - d.children.length * 1.5;
@@ -367,17 +371,18 @@ exports.displayCurricula = function (tag = 'tree', treeData = treeData, initialW
 
     // Toggle children on click.
     function toggleNodes(d) {
-      if (d.children) {
-        d.isClosed = true;
-        d._children = d.children;
-        d.children = null;
-      } else {
-        d.isClosed = false;
-        d.children = d._children;
-        d._children = null;
+      if ((d.children && d.children.length > 0) || (d._children && d._children.length > 0)) {
+        if (d.children) {
+          d.isClosed = true;
+          d._children = d.children ? d.children : d.data.children ? d.data.children : null;
+          d.children = null;
+        } else {
+          d.isClosed = false;
+          d.children = d._children ? d._children : d.data._children ? d.data._children : null;
+          d._children = null;
+        }
       }
     }
-
 
     function clickNodeTree(d) {
 
@@ -485,9 +490,6 @@ exports.displayCurricula = function (tag = 'tree', treeData = treeData, initialW
         currentSelectedD.children = [];
       }
 
-      // newNode numNode to calculate text up or down
-      newNode.numNode = currentSelectedD.children ? currentSelectedD.children.length : 0;
-
       //Push it to parent.children array  
       currentSelectedD.children.push(newNode);
 
@@ -530,9 +532,6 @@ exports.displayCurricula = function (tag = 'tree', treeData = treeData, initialW
       currentSelectedD.children = [];
     }
 
-    // newNode numNode to calculate text up or down
-    newNode.numNode = currentSelectedD.children ? currentSelectedD.children.length : 0;
-
     //Push it to parent.children array  
     currentSelectedD.children.push(newNode);
 
@@ -560,9 +559,6 @@ exports.displayCurricula = function (tag = 'tree', treeData = treeData, initialW
     newNode.parent = currentSelectedD;
     // newNode.id = Date.now();
 
-    // newNode numNode to calculate text up or down
-    newNode.numNode = currentSelectedD.children ? currentSelectedD.children.length : 0;
-
     //Selected is a node, to which we are adding the new node as a child
     //If no child array, create an empty array
     if (!currentSelectedD.children) {
@@ -583,17 +579,6 @@ exports.displayCurricula = function (tag = 'tree', treeData = treeData, initialW
 
     //Push it to parent.children array  
     currentSelectedD.children.push(newNode);
-
-    calculateNumChild(currentSelectedD.children);
-
-    function calculateNumChild(children) {
-      if (children && children.length > 0) {
-        for (var j = 0; j < children.length; j++) {
-          children[j].numNode = j;
-          calculateNumChild(children[j].children);
-        }
-      }
-    }
 
     //Update tree
     exports.update(currentSelectedD);
